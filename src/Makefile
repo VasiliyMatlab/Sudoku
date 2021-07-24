@@ -9,11 +9,11 @@ all: start building
 start:
 	@ echo Start building
 
-building: $(BUILD)/sudoku.o $(BUILD)/puzzle.o
-	$(CC) $(BUILD)/sudoku.o $(BUILD)/puzzle.o -o $(BIN)/Sudoku
+building: $(BUILD)/main.o $(BUILD)/sudoku.o
+	$(CC) $(BUILD)/main.o $(BUILD)/sudoku.o -o $(BIN)/Sudoku
 
-$(BUILD)/sudoku.o: sudoku.c puzzle.h
+$(BUILD)/main.o: main.c sudoku.h
+	$(CC) $(CFLAGS) main.c -o $(BUILD)/main.o
+
+$(BUILD)/sudoku.o: sudoku.c sudoku.h
 	$(CC) $(CFLAGS) sudoku.c -o $(BUILD)/sudoku.o
-
-$(BUILD)/puzzle.o: puzzle.c puzzle.h
-	$(CC) $(CFLAGS) puzzle.c -o $(BUILD)/puzzle.o
