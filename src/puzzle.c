@@ -1,6 +1,6 @@
 #include "../include/sudoku.h"
 
-int** createPuzzle(void) {
+int** createPuzzle() {
     int array[9][9] = {{0,1,9,  0,0,2,  0,0,0},
                        {4,7,0,  6,9,0,  0,0,1},
                        {0,0,0,  4,0,0,  0,9,0},
@@ -22,12 +22,12 @@ int** createPuzzle(void) {
     return puzzle;
 }
 
-void printPuzzle(int** puzzle) {
+void printPuzzle(Square*** puzzle) {
     printf(" --------------------------------\n");
     for (int i = 0; i < SIZE_ROWS; i++) {
         printf(" | ");
         for (int j = 0; j < SIZE_COLUMNS; j++) {
-            printf(" %d ", puzzle[i][j]);
+            printf(" %d ", (puzzle[i][j])->number);
             if (((j+1) % 3) == 0)
                 printf("|");
         }
@@ -39,6 +39,7 @@ void printPuzzle(int** puzzle) {
 
 Square*** setUpPuzzle(int** puzzle) {
     Square*** sudoku;
+
     // malloc space for each row
     sudoku = (Square***) malloc(9*sizeof(Square**));
     // loop through rows
@@ -54,13 +55,55 @@ Square*** setUpPuzzle(int** puzzle) {
             // assign row and column numbers to each square
             sudoku[i][j]->row = i;
             sudoku[i][j]->column = j;
-            // if number isn't zero, the square isn't empty
-            if (sudoku[i][j]->number != 0)
-                sudoku[i][j]->code = POSSIBLE;
-            // else the square is empty
-            else
-                sudoku[i][j]->code = 0x0;
+            sudoku[i][j]->solvable = 9;
+            for (int x = 0; x < SIZE_ROWS; x++)
+                sudoku[i][j]->possible[x] = 0;
         }
     }
+
+    // loop through rows
+    for (int i = 0; i < SIZE_ROWS; i++) {
+        // loop through columns
+        for (int j = 0; j < SIZE_COLUMNS; j++) {
+            if (sudoku[i][j]->number != 0) {
+                sudoku[i][j]->solvable = 0;
+                updateSudoku(sudoku, i, j);
+                UNSOLVED--;
+            }
+        }
+    }
+
     return sudoku;
+}
+
+int updateSudoku(Square*** sudoku, int row, int column) {
+    int number = sudoku[row][column]->number;
+
+    for (int x = 0; x < SIZE_ROWS; x++) {
+        if (sudoku[x][column]->possible[number-1] == 0)
+            sudoku[x][column]->solvable--;
+        sudoku[x][column]->possible[number-1] = 1;
+    }
+
+    for (int x = 0; x < SIZE_COLUMNS; x++) {
+        if (sudoku[row][x]->possible[number-1] == 0)
+            sudoku[row][x]->solvable--;
+        sudoku[row][x]->possible[number-1] = 1;
+    }
+
+    return 1;
+}
+
+int checkPuzzle(Square*** sudoku) {
+    // loop through rows
+    for (int i = 0; i < SIZE_ROWS; i++) {
+        // loop through columns
+        for (int j = 0; j < SIZE_COLUMNS; j++) {
+            if (sudoku[i][j]->solvable == 1) {
+                solveSquare(sudoku[i][j]);
+                updateSudoku(sudoku, i, j);
+            }
+        }
+    }
+    return 1;
 }
