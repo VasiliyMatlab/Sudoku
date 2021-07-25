@@ -8,7 +8,16 @@ extern int UNSOLVED;
 extern int SIZE_ROWS;
 extern int SIZE_COLUMNS;
 
+typedef struct Sudoku {
+    struct Square*** squares;
+    struct Box** boxes;
+} Sudoku;
+
 typedef struct Box {
+    struct Square** squares;
+    int numbers;
+    int possible[9];
+    int solvable;
     struct Box *next;
 } Box;
 
@@ -25,10 +34,17 @@ typedef struct Square {
 
 int** createPuzzle();
 void printPuzzle(Square***);
-Square*** setUpPuzzle(int**);
+Sudoku* setUpPuzzle(int**);
 int updateSudoku(Square***, int, int);
-int checkPuzzle(Square***);
+int checkPuzzle(Square***, Box**);
+
+Sudoku* createSudoku(Square***, Box**);
 
 int solveSquare(Square*);
+
+// box functions
+Box** createBoxes();
+int updateBoxes(Square***, int, int);
+int boxSingles(Square***, Box**);
 
 #endif

@@ -37,9 +37,12 @@ void printPuzzle(Square*** puzzle) {
     }
 }
 
-Square*** setUpPuzzle(int** puzzle) {
+Sudoku* setUpPuzzle(int** puzzle) {
     Square*** sudoku;
+    Box** boxes;
+    int currentBox = 0;
 
+    boxes = createBoxes();
     // malloc space for each row
     sudoku = (Square***) malloc(9*sizeof(Square**));
     // loop through rows
@@ -56,9 +59,21 @@ Square*** setUpPuzzle(int** puzzle) {
             sudoku[i][j]->row = i;
             sudoku[i][j]->column = j;
             sudoku[i][j]->solvable = 9;
+            boxes[currentBox]->squares[boxes[currentBox]->numbers] = sudoku[i][j];
+            sudoku[i][j]->box = boxes[currentBox];
+            boxes[currentBox]->numbers++;
             for (int x = 0; x < SIZE_ROWS; x++)
                 sudoku[i][j]->possible[x] = 0;
+            if (j == 2)
+                currentBox++;
+            if (j == 5)
+                currentBox++;
         }
+        currentBox -= 2;
+        if (i == 2)
+            currentBox += 3;
+        if (i == 5)
+            currentBox += 3;
     }
 
     // loop through rows
@@ -68,12 +83,13 @@ Square*** setUpPuzzle(int** puzzle) {
             if (sudoku[i][j]->number != 0) {
                 sudoku[i][j]->solvable = 0;
                 updateSudoku(sudoku, i, j);
+                updateBoxes(sudoku, i, j);
                 UNSOLVED--;
             }
         }
     }
 
-    return sudoku;
+    return createSudoku(sudoku, boxes);
 }
 
 int updateSudoku(Square*** sudoku, int row, int column) {
@@ -94,7 +110,7 @@ int updateSudoku(Square*** sudoku, int row, int column) {
     return 1;
 }
 
-int checkPuzzle(Square*** sudoku) {
+int checkPuzzle(Square*** sudoku, Box** boxes) {
     // loop through rows
     for (int i = 0; i < SIZE_ROWS; i++) {
         // loop through columns
@@ -102,8 +118,20 @@ int checkPuzzle(Square*** sudoku) {
             if (sudoku[i][j]->solvable == 1) {
                 solveSquare(sudoku[i][j]);
                 updateSudoku(sudoku, i, j);
+                updateBoxes(sudoku, i, j);
             }
         }
     }
+    boxSingles(sudoku, boxes);
     return 1;
+}
+
+Sudoku* createSudoku(Square*** squares, Box** boxes) {
+    Sudoku *sudoku;
+
+    sudoku = (Sudoku*) malloc(sizeof(Sudoku));
+    sudoku->squares = squares;
+    sudoku->boxes = boxes;
+
+    return sudoku;
 }
