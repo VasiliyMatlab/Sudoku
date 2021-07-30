@@ -11,9 +11,8 @@
 typedef struct Box {
     uint8_t box_row;            // строка блока
     uint8_t box_column;         // столбец блока
-    struct Cell **boxes_cells;  // ячейки блока
     uint16_t code;              // битовое представление возможных значений
-    /* XXXX XXX0 0000 0000
+    /* XXXX XXX1 1011 0110
        XXXX XXX9 8765 4321
        0 - значение доступно
        1 - значение недоступно
@@ -28,17 +27,17 @@ typedef struct Cell {
     uint8_t number;             // цифра, записанная в ячейке
     uint16_t code;              // битовое представление возможных значений
     uint8_t possible;           // кол-во возможных значений
-    //struct Box *current_box;    // указатель на текущий блок
 } Cell;
 
 uint8_t **createPuzzle(void);
 void printPuzzle(uint8_t **);
+Cell **initSudoku(uint8_t **);
 Cell **setupCells(uint8_t **);
-Box **setupBoxes(Cell ***);
+Box **setupBoxes(Cell **);
 void checkPuzzle(Box ***, Cell ***);
 void updateRow(Cell ***, uint8_t, uint8_t);
 void updateColumn(Cell ***, uint8_t, uint8_t);
-void updateBox(Cell ***, uint8_t , uint8_t);
+void updateBox(Box, Cell ***, uint8_t);
 uint8_t **convertCellstoPuzzle(Cell **);
 
 #endif
