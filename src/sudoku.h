@@ -1,9 +1,7 @@
 #ifndef PUZZLE_H
 #define PUZZLE_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
+#include "internal.h"
 
 #define BASE 3
 #define SIZE BASE*BASE
@@ -12,7 +10,7 @@
 typedef struct Box {
     uint8_t box_row;        // строка блока
     uint8_t box_column;     // столбец блока
-    struct Cell** cells;    // ячейки блока
+    struct Cell **cells;    // ячейки блока
     uint16_t code;          // битовое представление возможных значений
     /* XXXX XXX0 0000 0000
        XXXX XXX9 8765 4321
@@ -32,7 +30,7 @@ typedef struct Cell {
     struct Box *current_box;    // указатель на текущий блок
 } Cell;
 
-uint8_t** createPuzzle(void);
-void printPuzzle(uint8_t**);
+uint8_t **createPuzzle(void);
+void printPuzzle(uint8_t **);
 
 #endif

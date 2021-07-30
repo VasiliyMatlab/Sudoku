@@ -1,9 +1,12 @@
 #include "sudoku.h"
 
-// Реализовать считывание поля из файла
-
 int main() {
-    uint8_t** Puzzle;
+    if ((BASE > 4) || (BASE < 1)) {
+        fprintf(stderr, "Error: invalid value for 'BASE' macro\n");
+        fprintf(stderr, "BASE = %d\n", BASE);
+        exit(EINVAL);
+    }
+    uint8_t **Puzzle;
     Puzzle = createPuzzle();
     printPuzzle(Puzzle);
     return 0;

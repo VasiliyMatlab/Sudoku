@@ -1,26 +1,23 @@
 #include "sudoku.h"
 
 // Создание динамического массива поля
-uint8_t** createPuzzle(void) {
-    uint8_t array[SIZE][SIZE] = {{0,1,9,  0,0,2,  0,0,0},
-                                 {4,7,0,  6,9,0,  0,0,1},
-                                 {0,0,0,  4,0,0,  0,9,0},
-
-                                 {8,9,4,  5,0,7,  0,0,0},
-                                 {0,0,0,  0,0,0,  0,0,0},
-                                 {0,0,0,  2,0,1,  9,5,8},
-
-                                 {0,5,0,  0,0,6,  0,0,0},
-                                 {6,0,0,  0,2,8,  0,7,9},
-                                 {0,0,0,  1,0,0,  8,6,0}};
-    uint8_t** puzzle;
-    puzzle = (uint8_t**) malloc(SIZE*sizeof(uint8_t*));
-    for (uint8_t i = 0; i < SIZE; i++) {
-        puzzle[i] = (uint8_t*) malloc(SIZE*sizeof(uint8_t));
-        for (uint8_t j = 0; j < SIZE; j++)
-            puzzle[i][j] = array[i][j];
+uint8_t **createPuzzle(void) {
+    uint8_t rows, columns;
+    uint8_t **array = readArray(FILENAME, &rows, &columns);
+    if (rows != columns) {
+        fprintf(stderr, \
+            "Error: 'rows' variable not equal to 'columns' variable\n");
+        fprintf(stderr, "rows = %d, columns = %d\n", rows, columns);
+        exit(EINVAL);
     }
-    return puzzle;
+    if ((rows != SIZE) || (columns != SIZE)) {
+        fprintf(stderr, \
+            "Error: 'rows' or 'columns' variable not equal to 'SIZE' macro\n");
+        fprintf(stderr, "rows = %d, columns = %d\n", rows, columns);
+        fprintf(stderr, "SIZE = %d\n", SIZE);
+        exit(EINVAL);
+    }
+    return array;
 }
 
 // Вывод поля на экран
