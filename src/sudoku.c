@@ -1,6 +1,8 @@
 #include "sudoku.h"
 
 extern uint8_t unsolved;
+extern Cell **cells;
+extern Box **boxes;
 
 // Создание массива поля
 uint8_t **createPuzzle(void) {
@@ -39,9 +41,9 @@ void printPuzzle(uint8_t **puzzle) {
 }
 
 // Инициализация массива структур поля
-Cell **initSudoku(uint8_t **puzzle) {
-    Cell **cells = setupCells(puzzle);
-    Box **boxes = setupBoxes(cells);
+void initSudoku(uint8_t **puzzle) {
+    setupCells(puzzle);
+    setupBoxes();
     // Обновление данных в ячейках за счет ячеек
     // Цикл по строкам
     for (uint8_t i = 0; i < SIZE; i++) {
@@ -59,18 +61,17 @@ Cell **initSudoku(uint8_t **puzzle) {
                 boxes[x][y].code |= 1 << (cells[i][j].number-1);
                 boxes[x][y].possible--;
                 // Обновление строки, столбца, ячеек блока
-                updateRow(&cells, i, cells[i][j].number);
-                updateColumn(&cells, j, cells[i][j].number);
-                updateBox(boxes[x][y], &cells, cells[i][j].number);
+                updateRow(i, cells[i][j].number);
+                updateColumn(j, cells[i][j].number);
+                updateBox(x, y, cells[i][j].number);
             }
         }
     }
-    return cells;
 }
 
 // Инициализация ячеек
-Cell **setupCells(uint8_t **puzzle) {
-    Cell **cells = (Cell **) malloc(SIZE*sizeof(Cell *));
+void setupCells(uint8_t **puzzle) {
+    cells = (Cell **) malloc(SIZE*sizeof(Cell *));
     // Занесение данных в ячейки
     // Цикл по строкам
     for (uint8_t i = 0; i < SIZE; i++) {
@@ -84,72 +85,67 @@ Cell **setupCells(uint8_t **puzzle) {
             cells[i][j].possible = SIZE;
         }
     }
-    return cells;
 }
 
 // Инициализация блоков
-Box **setupBoxes(Cell **cells) {
-    Box **boxes = (Box **) malloc(BASE*sizeof(Box *));
+void setupBoxes(void) {
+    boxes = (Box **) malloc(BASE*sizeof(Box *));
     // Занесение данных в блоки
     // Цикл по строкам
-    for (uint8_t i = 0; i < BASE; i++) {
-        boxes[i] = (Box *) malloc(BASE*sizeof(Box));
+    for (uint8_t x = 0; x < BASE; x++) {
+        boxes[x] = (Box *) malloc(BASE*sizeof(Box));
         // Цикл по столбцам
-        for (uint8_t j = 0; j < BASE; j++) {
-            boxes[i][j].box_row = i;
-            boxes[i][j].box_column = j;
-            boxes[i][j].code = 0;
-            boxes[i][j].possible = SIZE;
+        for (uint8_t y = 0; y < BASE; y++) {
+            boxes[x][y].box_row = x;
+            boxes[x][y].box_column = y;
+            boxes[x][y].code = 0;
+            boxes[x][y].possible = SIZE;
         }
     }
-    return boxes;
 }
 
 // Проверка поля на доступность записи значения
-void checkPuzzle(Box ***boxes, Cell ***cells) {
+void checkPuzzle(void) {
 
 }
 
 // Обновление строки (запись обновленных данных в другие ячейки)
-void updateRow(Cell ***cells, uint8_t row, uint8_t num) {
+void updateRow(uint8_t row, uint8_t num) {
     for (uint8_t j = 0; j < SIZE; j++) {
-        if (!cells[row][j]->number) {
-            cells[row][j]->code |= 1 << (num-1);
-            cells[row][j]->possible--;
+        if (!cells[row][j].number) {
+            cells[row][j].code |= 1 << (num-1);
+            cells[row][j].possible--;
         }
     }
 }
 
 // Обновление столбца (запись обновленных данных в другие ячейки)
-void updateColumn(Cell ***cells, uint8_t column, uint8_t num) {
+void updateColumn(uint8_t column, uint8_t num) {
     for (uint8_t i = 0; i < SIZE; i++) {
-        if (!cells[i][column]->number) {
-            cells[i][column]->code |= 1 << (num-1);
-            cells[i][column]->possible--;
+        if (!cells[i][column].number) {
+            cells[i][column].code |= 1 << (num-1);
+            cells[i][column].possible--;
         }
     }
 }
 
 // Обновление блока (запись обновленных данных в другие ячейки)
-void updateBox(Box boxes, Cell ***cells, uint8_t num) {
+void updateBox(uint8_t x, uint8_t y, uint8_t num) {
     // Цикл по строкам блока
-    for (uint8_t x = 0; x < BASE; x++) {
+    for (uint8_t i = 0; i < BASE; i++) {
         // Цикл по столбцам блока
-        for (uint8_t y = 0; y < BASE; y++) {
+        for (uint8_t j = 0; j < BASE; j++) {
             // Если ячейка пустая
-            if (!cells[BASE*boxes.box_row + x][BASE*boxes.box_column + y]-> \
-                number) {
-                cells[BASE*boxes.box_row + x][BASE*boxes.box_column + y]-> \
-                    code |= 1 << (num-1);
-                cells[BASE*boxes.box_row + x][BASE*boxes.box_column + y]-> \
-                    possible--;
+            if (!cells[BASE*x + i][BASE*y + j].number) {
+                cells[BASE*x + i][BASE*y + j].code |= 1 << (num-1);
+                cells[BASE*x + i][BASE*y + j].possible--;
             }
         }
     }
 }
 
 // Конвертирование массива структур ячеек в массив поля
-uint8_t **convertCellstoPuzzle(Cell **cells) {
+uint8_t **convertCellstoPuzzle(void) {
     uint8_t **puzzle = (uint8_t **) malloc(SIZE*sizeof(uint8_t *));
     // Цикл по строкам
     for (uint8_t i = 0; i < SIZE; i++) {

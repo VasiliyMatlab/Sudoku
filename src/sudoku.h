@@ -31,13 +31,13 @@ typedef struct Cell {
 
 uint8_t **createPuzzle(void);
 void printPuzzle(uint8_t **);
-Cell **initSudoku(uint8_t **);
-Cell **setupCells(uint8_t **);
-Box **setupBoxes(Cell **);
-void checkPuzzle(Box ***, Cell ***);
-void updateRow(Cell ***, uint8_t, uint8_t);
-void updateColumn(Cell ***, uint8_t, uint8_t);
-void updateBox(Box, Cell ***, uint8_t);
-uint8_t **convertCellstoPuzzle(Cell **);
+void initSudoku(uint8_t **);
+void setupCells(uint8_t **);
+void setupBoxes(void);
+void checkPuzzle(void);
+void updateRow(uint8_t, uint8_t);
+void updateColumn(uint8_t, uint8_t);
+void updateBox(uint8_t, uint8_t, uint8_t);
+uint8_t **convertCellstoPuzzle(void);
 
 #endif

@@ -10,7 +10,7 @@
 #include <ctype.h>
 
 #define BUFFER_SIZE 128
-#define FILENAME "../bin/data.dan"
+#define FILENAME "data.dan"
 
 uint8_t** readArray(char *, uint8_t *, uint8_t *);
 
