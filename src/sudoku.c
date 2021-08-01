@@ -106,11 +106,56 @@ void setupBoxes(void) {
 
 // Проверка поля на доступность записи значения
 void checkPuzzle(void) {
-
+    // Цикл по строкам
+    for (uint8_t i = 0; i < SIZE; i++) {
+        // Цикл по столбцам
+        for (uint8_t j = 0; j < SIZE; j++) {
+            // Если в ячейке не записано число
+            if (!cells[i][j].number) {
+                // Проверяем, сколько
+                // существует доступных значений
+                uint8_t avaliable = 0;
+                // Цикл по доступным значениям
+                for (uint8_t k = 1; k <= SIZE; k++) {
+                    // Если значение доступно
+                    if (!(cells[i][j].code & (1 << (k-1)))) {
+                        // Если до этого не было найдено доступных значений,
+                        // то данное будет первым
+                        if (!avaliable)
+                            avaliable = k;
+                        // Иначе доступных значений несколько,
+                        // поэтому проверяем следующую ячейку
+                        else {
+                            avaliable = 0;
+                            break;
+                        }
+                    }
+                }
+                // Если доступное значение единственное
+                if (avaliable) {
+                    // Изменение ячейки
+                    cells[i][j].number = avaliable;
+                    cells[i][j].code = (~0) >> (CODE_BITS - SIZE);
+                    cells[i][j].possible = 0;
+                    unsolved--;
+                    // Изменение блока
+                    uint8_t x = i / BASE;   // строка блока
+                    uint8_t y = j / BASE;   // столбец блока
+                    boxes[x][y].code |= 1 << (cells[i][j].number-1);
+                    boxes[x][y].possible--;
+                    // Обновление строки, столбца, ячеек блока
+                    updateRow(i, cells[i][j].number);
+                    updateColumn(j, cells[i][j].number);
+                    updateBox(x, y, cells[i][j].number);
+                }
+            }
+        }
+    }
 }
 
 // Обновление строки (запись обновленных данных в другие ячейки)
 void updateRow(uint8_t row, uint8_t num) {
+    // Цикл по столбцам
     for (uint8_t j = 0; j < SIZE; j++) {
         if (!cells[row][j].number) {
             cells[row][j].code |= 1 << (num-1);
@@ -121,6 +166,7 @@ void updateRow(uint8_t row, uint8_t num) {
 
 // Обновление столбца (запись обновленных данных в другие ячейки)
 void updateColumn(uint8_t column, uint8_t num) {
+    // Цикл по строкам
     for (uint8_t i = 0; i < SIZE; i++) {
         if (!cells[i][column].number) {
             cells[i][column].code |= 1 << (num-1);

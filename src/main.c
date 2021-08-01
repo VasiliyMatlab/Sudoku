@@ -14,7 +14,10 @@ int main() {
     }
     uint8_t **Puzzle;
     Puzzle = createPuzzle();
+    printPuzzle(Puzzle);
     initSudoku(Puzzle);
+    checkPuzzle();
+    Puzzle = convertCellstoPuzzle();
     printPuzzle(Puzzle);
     return 0;
 }
