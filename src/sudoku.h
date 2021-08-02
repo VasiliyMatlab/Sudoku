@@ -32,7 +32,7 @@ typedef struct Cell {
 } Cell;
 
 // Прототипы функций
-uint8_t **createPuzzle(void);
+uint8_t **createPuzzle(char *);
 uint8_t **convertCellstoPuzzle(void);
 void printPuzzle(uint8_t **);
 void initSudoku(uint8_t **);
@@ -46,5 +46,6 @@ _Bool checkRow(uint8_t, uint8_t, uint8_t);
 _Bool checkColumn(uint8_t, uint8_t, uint8_t);
 _Bool checkBox(uint8_t, uint8_t, uint8_t);
 void changing(uint8_t, uint8_t, uint8_t);
+void clearSudoku();
 
 #endif

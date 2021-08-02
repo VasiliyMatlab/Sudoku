@@ -12,7 +12,6 @@
 
 // Макросы
 #define BUFFER_SIZE 128
-#define FILENAME "data.dan"
 
 // Прототипы функций
 uint8_t** readArray(char *, uint8_t *, uint8_t *);

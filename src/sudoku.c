@@ -7,9 +7,9 @@ extern Cell **cells;
 extern Box **boxes;
 
 // Создание массива поля
-uint8_t **createPuzzle(void) {
+uint8_t **createPuzzle(char *filename) {
     uint8_t rows, columns;
-    uint8_t **array = readArray(FILENAME, &rows, &columns);
+    uint8_t **array = readArray(filename, &rows, &columns);
     if (rows != columns) {
         fprintf(stderr, \
             "Error: 'rows' variable not equal to 'columns' variable\n");
@@ -95,10 +95,10 @@ void setupCells(uint8_t **puzzle) {
 void setupBoxes(void) {
     boxes = (Box **) malloc(BASE*sizeof(Box *));
     // Занесение данных в блоки
-    // Цикл по строкам
+    // Цикл по строкам блоков
     for (uint8_t x = 0; x < BASE; x++) {
         boxes[x] = (Box *) malloc(BASE*sizeof(Box));
-        // Цикл по столбцам
+        // Цикл по столбцам блоков
         for (uint8_t y = 0; y < BASE; y++) {
             boxes[x][y].box_row = x;
             boxes[x][y].box_column = y;
@@ -288,4 +288,18 @@ void changing(uint8_t i, uint8_t j, uint8_t num) {
     updateRow(i, num);
     updateColumn(j, num);
     updateBox(x, y, num);
+}
+
+// Деструктор (очистка памяти)
+void clearSudoku() {
+    // Цикл по строкам
+    for (uint8_t i = 0; i < SIZE; i++)
+        free(cells[i]);
+    free(cells);
+    cells = NULL;
+    // Цикл по строкам блоков
+    for (uint8_t x = 0; x < BASE; x++)
+        free(boxes[x]);
+    free(boxes);
+    boxes = NULL;
 }
