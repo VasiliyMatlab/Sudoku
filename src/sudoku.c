@@ -51,19 +51,8 @@ void initSudoku(uint8_t **puzzle) {
         for (uint8_t j = 0; j < SIZE; j++) {
             // Если в ячейке не нуль
             if (cells[i][j].number) {
-                // Изменение ячейки
-                cells[i][j].code = (~0) >> (CODE_BITS - SIZE);
-                cells[i][j].possible = 0;
-                unsolved--;
-                // Изменение блока
-                uint8_t x = i / BASE;   // строка блока
-                uint8_t y = j / BASE;   // столбец блока
-                boxes[x][y].code |= 1 << (cells[i][j].number-1);
-                boxes[x][y].possible--;
-                // Обновление строки, столбца, ячеек блока
-                updateRow(i, cells[i][j].number);
-                updateColumn(j, cells[i][j].number);
-                updateBox(x, y, cells[i][j].number);
+                // Обновление всего, что связано с ячейкой
+                changing(i, j, cells[i][j].number);
             }
         }
     }
@@ -112,13 +101,22 @@ void checkPuzzle(void) {
         for (uint8_t j = 0; j < SIZE; j++) {
             // Если в ячейке не записано число
             if (!cells[i][j].number) {
-                // Проверяем, сколько
-                // существует доступных значений
-                uint8_t avaliable = 0;
-                // Цикл по доступным значениям
+                // Проверяем доступные значения
+                uint8_t avaliable = 0;  // доступное значение
+                // Цикл до значениям
                 for (uint8_t k = 1; k <= SIZE; k++) {
                     // Если значение доступно
                     if (!(cells[i][j].code & (1 << (k-1)))) {
+                        // Проверяем, является ли число единственно доступным
+                        // в строке, столбце или блоке
+                        if (!checkRow(i, j, k) || !checkColumn(i, j, k) || \
+                            !checkBox(i, j, k)) {
+                            // Изменение значения ячейки
+                            cells[i][j].number = k;
+                            // Обновление всего, что связано с ячейкой
+                            changing(i, j, k);
+                            break;
+                        }
                         // Если до этого не было найдено доступных значений,
                         // то данное будет первым
                         if (!avaliable)
@@ -131,22 +129,10 @@ void checkPuzzle(void) {
                         }
                     }
                 }
-                // Если доступное значение единственное
-                if (avaliable) {
-                    // Изменение ячейки
+                // Если доступное значение единственное и оно не изменилось
+                if (avaliable && !cells[i][j].number) {
                     cells[i][j].number = avaliable;
-                    cells[i][j].code = (~0) >> (CODE_BITS - SIZE);
-                    cells[i][j].possible = 0;
-                    unsolved--;
-                    // Изменение блока
-                    uint8_t x = i / BASE;   // строка блока
-                    uint8_t y = j / BASE;   // столбец блока
-                    boxes[x][y].code |= 1 << (cells[i][j].number-1);
-                    boxes[x][y].possible--;
-                    // Обновление строки, столбца, ячеек блока
-                    updateRow(i, cells[i][j].number);
-                    updateColumn(j, cells[i][j].number);
-                    updateBox(x, y, cells[i][j].number);
+                    changing(i, j, avaliable);
                 }
             }
         }
@@ -157,7 +143,9 @@ void checkPuzzle(void) {
 void updateRow(uint8_t row, uint8_t num) {
     // Цикл по столбцам
     for (uint8_t j = 0; j < SIZE; j++) {
-        if (!cells[row][j].number) {
+        // Если в ячейке не записано значение и данная цифра является возможной
+        if (!cells[row][j].number && \
+            !(cells[row][j].code & (1 << (num-1)))) {
             cells[row][j].code |= 1 << (num-1);
             cells[row][j].possible--;
         }
@@ -168,7 +156,9 @@ void updateRow(uint8_t row, uint8_t num) {
 void updateColumn(uint8_t column, uint8_t num) {
     // Цикл по строкам
     for (uint8_t i = 0; i < SIZE; i++) {
-        if (!cells[i][column].number) {
+        // Если в ячейке не записано значение и данная цифра является возможной
+        if (!cells[i][column].number && \
+            !(cells[i][column].code & (1 << (num-1)))) {
             cells[i][column].code |= 1 << (num-1);
             cells[i][column].possible--;
         }
@@ -181,8 +171,10 @@ void updateBox(uint8_t x, uint8_t y, uint8_t num) {
     for (uint8_t i = 0; i < BASE; i++) {
         // Цикл по столбцам блока
         for (uint8_t j = 0; j < BASE; j++) {
-            // Если ячейка пустая
-            if (!cells[BASE*x + i][BASE*y + j].number) {
+            // Если в ячейке не записано значение и
+            // данная цифра является возможной
+            if (!cells[BASE*x + i][BASE*y + j].number && \
+                !(cells[BASE*x + i][BASE*y + j].code & (1 << (num-1)))) {
                 cells[BASE*x + i][BASE*y + j].code |= 1 << (num-1);
                 cells[BASE*x + i][BASE*y + j].possible--;
             }
@@ -201,4 +193,42 @@ uint8_t **convertCellstoPuzzle(void) {
             puzzle[i][j] = cells[i][j].number;
     }
     return puzzle;
+}
+
+// Проверка строки на наличие возможностей записи числа 'num' в ячейки строки
+_Bool checkRow(uint8_t i, uint8_t j, uint8_t num) {
+    // Возвращаем 'false', если такая возможность одна (искомая ячейка)
+    // Возвращаем 'true', если доступных ячеек несколько
+    return true;
+}
+
+// Проверка строки на наличие возможностей записи числа 'num' в ячейки столбца
+_Bool checkColumn(uint8_t i, uint8_t j, uint8_t num) {
+    // Возвращаем 'false', если такая возможность одна (искомая ячейка)
+    // Возвращаем 'true', если доступных ячеек несколько
+    return true;
+}
+
+// Проверка строки на наличие возможностей записи числа 'num' в ячейки блока
+_Bool checkBox(uint8_t i, uint8_t j, uint8_t num) {
+    // Возвращаем 'false', если такая возможность одна (искомая ячейка)
+    // Возвращаем 'true', если доступных ячеек несколько
+    return true;
+}
+
+// Обновление ячейки (кроме ее значения)
+void changing(uint8_t i, uint8_t j, uint8_t num) {
+    // Изменение ячейки
+    cells[i][j].code = (~0) >> (CODE_BITS - SIZE);
+    cells[i][j].possible = 0;
+    unsolved--;
+    // Изменение блока
+    uint8_t x = i / BASE;   // строка блока
+    uint8_t y = j / BASE;   // столбец блока
+    boxes[x][y].code |= 1 << (num-1);
+    boxes[x][y].possible--;
+    // Обновление строки, столбца, ячеек блока
+    updateRow(i, num);
+    updateColumn(j, num);
+    updateBox(x, y, num);
 }

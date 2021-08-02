@@ -39,5 +39,9 @@ void updateRow(uint8_t, uint8_t);
 void updateColumn(uint8_t, uint8_t);
 void updateBox(uint8_t, uint8_t, uint8_t);
 uint8_t **convertCellstoPuzzle(void);
+_Bool checkRow(uint8_t, uint8_t, uint8_t);
+_Bool checkColumn(uint8_t, uint8_t, uint8_t);
+_Bool checkBox(uint8_t, uint8_t, uint8_t);
+void changing(uint8_t, uint8_t, uint8_t);
 
 #endif
