@@ -143,7 +143,7 @@ void checkPuzzle(void) {
 void updateRow(uint8_t row, uint8_t num) {
     // Цикл по столбцам
     for (uint8_t j = 0; j < SIZE; j++) {
-        // Если в ячейке не записано значение и данная цифра является возможной
+        // Если в ячейке не записано значение и оно является возможным
         if (!cells[row][j].number && \
             !(cells[row][j].code & (1 << (num-1)))) {
             cells[row][j].code |= 1 << (num-1);
@@ -156,7 +156,7 @@ void updateRow(uint8_t row, uint8_t num) {
 void updateColumn(uint8_t column, uint8_t num) {
     // Цикл по строкам
     for (uint8_t i = 0; i < SIZE; i++) {
-        // Если в ячейке не записано значение и данная цифра является возможной
+        // Если в ячейке не записано значение и оно является возможным
         if (!cells[i][column].number && \
             !(cells[i][column].code & (1 << (num-1)))) {
             cells[i][column].code |= 1 << (num-1);
@@ -171,12 +171,15 @@ void updateBox(uint8_t x, uint8_t y, uint8_t num) {
     for (uint8_t i = 0; i < BASE; i++) {
         // Цикл по столбцам блока
         for (uint8_t j = 0; j < BASE; j++) {
+            // Координаты текущей анализируемой ячейки
+            uint8_t ic = BASE*x + i;    // строка ячейки
+            uint8_t jc = BASE*y + j;    // столбец ячейки
             // Если в ячейке не записано значение и
-            // данная цифра является возможной
-            if (!cells[BASE*x + i][BASE*y + j].number && \
-                !(cells[BASE*x + i][BASE*y + j].code & (1 << (num-1)))) {
-                cells[BASE*x + i][BASE*y + j].code |= 1 << (num-1);
-                cells[BASE*x + i][BASE*y + j].possible--;
+            // оно является возможным
+            if (!cells[ic][jc].number && \
+                !(cells[ic][jc].code & (1 << (num-1)))) {
+                cells[ic][jc].code |= 1 << (num-1);
+                cells[ic][jc].possible--;
             }
         }
     }
@@ -196,24 +199,66 @@ uint8_t **convertCellstoPuzzle(void) {
 }
 
 // Проверка строки на наличие возможностей записи числа 'num' в ячейки строки
-_Bool checkRow(uint8_t i, uint8_t j, uint8_t num) {
+_Bool checkRow(uint8_t row, uint8_t column, uint8_t num) {
     // Возвращаем 'false', если такая возможность одна (искомая ячейка)
     // Возвращаем 'true', если доступных ячеек несколько
-    return true;
+    // Цикл по столбцам
+    for (uint8_t j = 0; j < SIZE; j++) {
+        // Если наткнулись на искомую ячейку,
+        // то не анализируем ее
+        if (j == column)
+            continue;
+        // Если значение доступно,
+        // то несколько доступных ячеек
+        if (!(cells[row][j].code & (1 << (num-1))))
+            return true;
+    }
+    return false;
 }
 
 // Проверка строки на наличие возможностей записи числа 'num' в ячейки столбца
-_Bool checkColumn(uint8_t i, uint8_t j, uint8_t num) {
+_Bool checkColumn(uint8_t row, uint8_t column, uint8_t num) {
     // Возвращаем 'false', если такая возможность одна (искомая ячейка)
     // Возвращаем 'true', если доступных ячеек несколько
-    return true;
+    // Цикл по строкам
+    for (uint8_t i = 0; i < SIZE; i++) {
+        // Если наткнулись на искомую ячейку,
+        // то не анализируем ее
+        if (i == row)
+            continue;
+        // Если значение доступно,
+        // то несколько доступных ячеек
+        if (!(cells[i][column].code & (1 << (num-1))))
+            return true;
+    }
+    return false;
 }
 
 // Проверка строки на наличие возможностей записи числа 'num' в ячейки блока
-_Bool checkBox(uint8_t i, uint8_t j, uint8_t num) {
+_Bool checkBox(uint8_t row, uint8_t column, uint8_t num) {
     // Возвращаем 'false', если такая возможность одна (искомая ячейка)
     // Возвращаем 'true', если доступных ячеек несколько
-    return true;
+    // Координаты блока:
+    uint8_t x = row / BASE;     // строка блока
+    uint8_t y = column / BASE;  // столбец блока
+    // Цикл по строкам блока
+    for (uint8_t i = 0; i < BASE; i++) {
+        // Цикл по столбцам блока
+        for (uint8_t j = 0; j < BASE; j++) {
+            // Координаты текущей анализируемой ячейки
+            uint8_t ic = BASE*x + i;    // строка ячейки
+            uint8_t jc = BASE*y + j;    // столбец ячейки
+            // Если наткнулись на искомую ячейку,
+            // то не анализируем ее
+            if ((ic == row) && (jc == column))
+                continue;
+            // Если значение доступно,
+            // то несколько доступных ячеек
+            if (!(cells[ic][jc].code & (1 << (num-1))))
+                return true;
+        }
+    }
+    return false;
 }
 
 // Обновление ячейки (кроме ее значения)

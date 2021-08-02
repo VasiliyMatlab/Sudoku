@@ -16,7 +16,7 @@ int main() {
     Puzzle = createPuzzle();
     printPuzzle(Puzzle);
     initSudoku(Puzzle);
-    // checkPuzzle();
+    checkPuzzle();
     Puzzle = convertCellstoPuzzle();
     printPuzzle(Puzzle);
     return 0;
