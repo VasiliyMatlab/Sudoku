@@ -1,8 +1,10 @@
 #ifndef PUZZLE_H
 #define PUZZLE_H
 
+// Подключаемые заголовочные файлы
 #include "internal.h"
 
+// Макросы
 #define BASE 3
 #define SIZE BASE*BASE
 #define CODE_BITS 16
@@ -29,16 +31,17 @@ typedef struct Cell {
     uint8_t possible;           // кол-во возможных значений
 } Cell;
 
+// Прототипы функций
 uint8_t **createPuzzle(void);
+uint8_t **convertCellstoPuzzle(void);
 void printPuzzle(uint8_t **);
 void initSudoku(uint8_t **);
 void setupCells(uint8_t **);
 void setupBoxes(void);
-void checkPuzzle(void);
 void updateRow(uint8_t, uint8_t);
 void updateColumn(uint8_t, uint8_t);
 void updateBox(uint8_t, uint8_t, uint8_t);
-uint8_t **convertCellstoPuzzle(void);
+void checkPuzzle(void);
 _Bool checkRow(uint8_t, uint8_t, uint8_t);
 _Bool checkColumn(uint8_t, uint8_t, uint8_t);
 _Bool checkBox(uint8_t, uint8_t, uint8_t);

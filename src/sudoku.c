@@ -1,5 +1,7 @@
+// Подключаемые заголовочные файлы
 #include "sudoku.h"
 
+// Подключение глобальных переменных
 extern uint8_t unsolved;
 extern Cell **cells;
 extern Box **boxes;
@@ -22,6 +24,19 @@ uint8_t **createPuzzle(void) {
         exit(EINVAL);
     }
     return array;
+}
+
+// Конвертирование массива структур ячеек в массив поля
+uint8_t **convertCellstoPuzzle(void) {
+    uint8_t **puzzle = (uint8_t **) malloc(SIZE*sizeof(uint8_t *));
+    // Цикл по строкам
+    for (uint8_t i = 0; i < SIZE; i++) {
+        puzzle[i] = (uint8_t *) malloc(SIZE*sizeof(uint8_t));
+        // Цикл по столбцам
+        for (uint8_t j = 0; j < SIZE; j++)
+            puzzle[i][j] = cells[i][j].number;
+    }
+    return puzzle;
 }
 
 // Вывод поля на экран
@@ -93,6 +108,52 @@ void setupBoxes(void) {
     }
 }
 
+// Обновление строки (запись обновленных данных в другие ячейки)
+void updateRow(uint8_t row, uint8_t num) {
+    // Цикл по столбцам
+    for (uint8_t j = 0; j < SIZE; j++) {
+        // Если в ячейке не записано значение и оно является возможным
+        if (!cells[row][j].number && \
+            !(cells[row][j].code & (1 << (num-1)))) {
+            cells[row][j].code |= 1 << (num-1);
+            cells[row][j].possible--;
+        }
+    }
+}
+
+// Обновление столбца (запись обновленных данных в другие ячейки)
+void updateColumn(uint8_t column, uint8_t num) {
+    // Цикл по строкам
+    for (uint8_t i = 0; i < SIZE; i++) {
+        // Если в ячейке не записано значение и оно является возможным
+        if (!cells[i][column].number && \
+            !(cells[i][column].code & (1 << (num-1)))) {
+            cells[i][column].code |= 1 << (num-1);
+            cells[i][column].possible--;
+        }
+    }
+}
+
+// Обновление блока (запись обновленных данных в другие ячейки)
+void updateBox(uint8_t x, uint8_t y, uint8_t num) {
+    // Цикл по строкам блока
+    for (uint8_t i = 0; i < BASE; i++) {
+        // Цикл по столбцам блока
+        for (uint8_t j = 0; j < BASE; j++) {
+            // Координаты текущей анализируемой ячейки
+            uint8_t ic = BASE*x + i;    // строка ячейки
+            uint8_t jc = BASE*y + j;    // столбец ячейки
+            // Если в ячейке не записано значение и
+            // оно является возможным
+            if (!cells[ic][jc].number && \
+                !(cells[ic][jc].code & (1 << (num-1)))) {
+                cells[ic][jc].code |= 1 << (num-1);
+                cells[ic][jc].possible--;
+            }
+        }
+    }
+}
+
 // Проверка поля на доступность записи значения
 void checkPuzzle(void) {
     // Цикл по строкам
@@ -147,65 +208,6 @@ void checkPuzzle(void) {
             }
         }
     }
-}
-
-// Обновление строки (запись обновленных данных в другие ячейки)
-void updateRow(uint8_t row, uint8_t num) {
-    // Цикл по столбцам
-    for (uint8_t j = 0; j < SIZE; j++) {
-        // Если в ячейке не записано значение и оно является возможным
-        if (!cells[row][j].number && \
-            !(cells[row][j].code & (1 << (num-1)))) {
-            cells[row][j].code |= 1 << (num-1);
-            cells[row][j].possible--;
-        }
-    }
-}
-
-// Обновление столбца (запись обновленных данных в другие ячейки)
-void updateColumn(uint8_t column, uint8_t num) {
-    // Цикл по строкам
-    for (uint8_t i = 0; i < SIZE; i++) {
-        // Если в ячейке не записано значение и оно является возможным
-        if (!cells[i][column].number && \
-            !(cells[i][column].code & (1 << (num-1)))) {
-            cells[i][column].code |= 1 << (num-1);
-            cells[i][column].possible--;
-        }
-    }
-}
-
-// Обновление блока (запись обновленных данных в другие ячейки)
-void updateBox(uint8_t x, uint8_t y, uint8_t num) {
-    // Цикл по строкам блока
-    for (uint8_t i = 0; i < BASE; i++) {
-        // Цикл по столбцам блока
-        for (uint8_t j = 0; j < BASE; j++) {
-            // Координаты текущей анализируемой ячейки
-            uint8_t ic = BASE*x + i;    // строка ячейки
-            uint8_t jc = BASE*y + j;    // столбец ячейки
-            // Если в ячейке не записано значение и
-            // оно является возможным
-            if (!cells[ic][jc].number && \
-                !(cells[ic][jc].code & (1 << (num-1)))) {
-                cells[ic][jc].code |= 1 << (num-1);
-                cells[ic][jc].possible--;
-            }
-        }
-    }
-}
-
-// Конвертирование массива структур ячеек в массив поля
-uint8_t **convertCellstoPuzzle(void) {
-    uint8_t **puzzle = (uint8_t **) malloc(SIZE*sizeof(uint8_t *));
-    // Цикл по строкам
-    for (uint8_t i = 0; i < SIZE; i++) {
-        puzzle[i] = (uint8_t *) malloc(SIZE*sizeof(uint8_t));
-        // Цикл по столбцам
-        for (uint8_t j = 0; j < SIZE; j++)
-            puzzle[i][j] = cells[i][j].number;
-    }
-    return puzzle;
 }
 
 // Проверка строки на наличие возможностей записи числа 'num' в ячейки строки
