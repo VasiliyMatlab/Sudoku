@@ -4,6 +4,7 @@ INCLUDE = ./include
 BIN = ./bin
 BUILD = ./build
 SRC = ./src
+PROJECT = youtube
 
 all: start building
 	@ echo Building is complete
@@ -12,7 +13,7 @@ start:
 	@ echo Start building
 
 building: $(BUILD)/sudoku.o $(BUILD)/puzzle.o $(BUILD)/square.o $(BUILD)/box.o $(BUILD)/row.o
-	$(CC) $(BUILD)/sudoku.o $(BUILD)/puzzle.o $(BUILD)/square.o $(BUILD)/box.o $(BUILD)/row.o -o $(BIN)/Sudoku
+	$(CC) $(BUILD)/sudoku.o $(BUILD)/puzzle.o $(BUILD)/square.o $(BUILD)/box.o $(BUILD)/row.o -o $(BIN)/$(PROJECT)
 
 $(BUILD)/sudoku.o: $(SRC)/sudoku.c $(INCLUDE)/sudoku.h
 	$(CC) $(CFLAGS) $(SRC)/sudoku.c -o $(BUILD)/sudoku.o
