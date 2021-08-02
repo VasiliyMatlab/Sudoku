@@ -102,7 +102,6 @@ void checkPuzzle(void) {
             // Если в ячейке не записано число
             if (!cells[i][j].number) {
                 // Проверяем доступные значения
-                uint8_t avaliable = 0;  // доступное значение
                 // Цикл до значениям
                 for (uint8_t k = 1; k <= SIZE; k++) {
                     // Если значение доступно
@@ -117,22 +116,33 @@ void checkPuzzle(void) {
                             changing(i, j, k);
                             break;
                         }
-                        // Если до этого не было найдено доступных значений,
-                        // то данное будет первым
-                        if (!avaliable)
-                            avaliable = k;
-                        // Иначе доступных значений несколько,
-                        // поэтому проверяем следующую ячейку
-                        else {
-                            avaliable = 0;
-                            break;
-                        }
                     }
                 }
-                // Если доступное значение единственное и оно не изменилось
-                if (avaliable && !cells[i][j].number) {
-                    cells[i][j].number = avaliable;
-                    changing(i, j, avaliable);
+                // Если значение не было записано
+                if (!cells[i][j].number) {
+                    // Проверяем доступные значения
+                    uint8_t avaliable = 0;  // доступное значение
+                    // Цикл до значениям
+                    for (uint8_t k = 1; k <= SIZE; k++) {
+                        // Если значение доступно
+                        if (!(cells[i][j].code & (1 << (k-1)))) {
+                            // Если до этого не было найдено доступных значений,
+                            // то данное будет первым
+                            if (!avaliable)
+                                avaliable = k;
+                            // Иначе доступных значений несколько,
+                            // поэтому проверяем следующую ячейку
+                            else {
+                                avaliable = 0;
+                                break;
+                            }
+                        }
+                    }
+                    // Если доступное значение единственное
+                    if (avaliable) {
+                        cells[i][j].number = avaliable;
+                        changing(i, j, avaliable);
+                    }
                 }
             }
         }

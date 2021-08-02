@@ -15,8 +15,20 @@ int main() {
     uint8_t **Puzzle;
     Puzzle = createPuzzle();
     printPuzzle(Puzzle);
+    uint8_t mem = unsolved;
     initSudoku(Puzzle);
-    checkPuzzle();
+    while (unsolved > 0) {
+        checkPuzzle();
+        if (unsolved == mem) {
+            printf(" Unable to solve the sudoku\n");
+            printf(" The last calculated field:\n");
+            break;
+        }
+        else
+            mem = unsolved;
+    }
+    if (!unsolved)
+        printf(" Success!\n");
     Puzzle = convertCellstoPuzzle();
     printPuzzle(Puzzle);
     return 0;
