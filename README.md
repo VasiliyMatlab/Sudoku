@@ -1,4 +1,4 @@
-<h1><img src="logo.png" width="60" /> Sudoku Solver</h1>
+<h1 align="left"><img src="figures/logo.jpg" width="40" alt="Sudoku Solver" v/> Sudoku Solver</h1>
 Данная программа предназначена для решения головоломок судоку. На данный момент алгоритм способен решать лишь несложные головоломки, что автор в будущем планирует исправить.
 <h3>Скачивание и сборка</h3>
 Необходимо клонировать репозиторий себе на локальный диск, затем собрать его (GCC должен быть 7.5.0 или новее):
@@ -27,11 +27,5 @@ ls
 ```
 Использование данных опций вместе со входными файлами данных запрещено!
 ***
-<p align="center"><a href="https://github.com/VasiliyMatlab"><img src="profile.jpg" width="100" /></a></p>
+<p align="center"><a href="https://github.com/VasiliyMatlab"><img src="figures/profile.jpg" width="100" alt="VasiliyMatlab" /></a></p>
 <p align="center"><a href="https://github.com/VasiliyMatlab" style="color: #000000">VasiliyMatlab</a></p>
-
-<style>
-    h1 img {
-        vertical-align: middle;
-    }
-</style>

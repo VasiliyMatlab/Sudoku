@@ -4,7 +4,3 @@
 # Local directories
 bin/
 build/
-
-# Images for logo
-*.png
-*.jpg
