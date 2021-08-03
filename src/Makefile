@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -c -Wall
 BIN = ../bin
 BUILD = ../build
-PROJECT = Sudoku
+PROJECT = sudoku
 
 all: start building
 	@ echo Building is complete
