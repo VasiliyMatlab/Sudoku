@@ -9,6 +9,7 @@ all: start building
 
 start:
 	@ echo Start building
+	../scripts/helper.sh
 
 building: $(BUILD)/main.o $(BUILD)/sudoku.o $(BUILD)/internal.o
 	$(CC) -g $(BUILD)/main.o $(BUILD)/sudoku.o $(BUILD)/internal.o -o $(BIN)/$(PROJECT)
