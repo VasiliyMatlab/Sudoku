@@ -46,5 +46,5 @@ ls
 ```
 Использование данных опций вместе со входными файлами данных запрещено!
 ***
-<p align="center"><a href="https://github.com/VasiliyMatlab"><img src="figures/profile.jpg" width="100" alt="VasiliyMatlab" /></a></p>
+<p align="center"><a href="https://github.com/VasiliyMatlab"><img src="https://github.com/VasiliyMatlab.png" width="100" alt="VasiliyMatlab" /></a></p>
 <p align="center"><a href="https://github.com/VasiliyMatlab" style="color: #000000">VasiliyMatlab</a></p>
